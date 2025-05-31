@@ -48,8 +48,6 @@ Backend PaySinc is a RESTful API designed to manage shared expenses among friend
 
 ## Project Structure
 
-## Project Structure
-
 ```text
 .
 ├── src/
