@@ -66,7 +66,7 @@ Backend PaySinc is a RESTful API designed to manage shared expenses among friend
 
 ---
 
-<pre> <code> ```text ├── src/ │ ├── config/ # Project configuration │ ├── controllers/ # Route controllers │ ├── db/ # Database connection │ ├── errors/ # Custom error handling classes │ ├── middleware/ # Custom middlewares │ ├── routes/ # Route definitions │ ├── schemas/ # Data validation with Zod │ ├── test/ # Automated tests │ ├── utils/ # General utilities │ ├── logs/ # Log files ├── .env # Environment variables ├── package.json ├── README.md ``` </code> </pre>
+<pre> <code> ```text . ├── src/ │ ├── config/ # Project configuration │ ├── controllers/ # Route controllers │ ├── db/ # Database connection │ ├── errors/ # Custom error handling classes │ ├── middleware/ # Custom middlewares │ ├── routes/ # Route definitions │ ├── schemas/ # Data validation with Zod │ ├── test/ # Automated tests │ ├── utils/ # General utilities │ ├── logs/ # Log files ├── .env # Environment variables ├── package.json ├── README.md ``` </code> </pre>
 
 ### 1. Clone the Repository
 
