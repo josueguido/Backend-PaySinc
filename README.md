@@ -1,6 +1,6 @@
 # Backend PaySinc
 
-![Node.js](https://img.shields.io/badge/node-%3E%3D16.0.0-green)
+![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-green)
 ![PostgreSQL](https://img.shields.io/badge/postgresql-%3E%3D12-blue)
 ![License](https://img.shields.io/badge/license-MIT-brightgreen)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
