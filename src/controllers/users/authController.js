@@ -69,7 +69,7 @@ const register = async (req, res, next) => {
 
     await query(
       "INSERT INTO users (email, password, username) VALUES ($1, $2, $3)",
-      [email, hashedPassword]
+      [email, hashedPassword, username]
     );
 
     const { rows: userRows } = await query(

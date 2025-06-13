@@ -14,6 +14,7 @@ import expenseRoutes from "./src/routes/expenseRoutes.js";
 import groupRoutes from "./src/routes/groupsRoutes.js";
 import friendRoutes from "./src/routes/friendRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
+import categoriesRoutes from "./src/routes/categoriesRoutes.js";
 
 import errorHandler from "./src/middleware/errorHandler.js";
 import notFound from "./src/errors/notFound.js";
@@ -44,6 +45,7 @@ app.use("/api/expenses", expenseRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/friends", friendRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/categories", categoriesRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
