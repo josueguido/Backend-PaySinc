@@ -33,8 +33,8 @@ export async function createCategory(req, res) {
     }
 
     const result = await query(
-      "INSERT INTO categories (name, icon, user_id) VALUES ($1, $2, $3) RETURNING *",
-      [name, description || null, req.user.id]
+      "INSERT INTO categories (name, description, user_id) VALUES ($1, $2, $3) RETURNING *",
+      [name, description, req.user.id]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
