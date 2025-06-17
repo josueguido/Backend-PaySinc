@@ -125,6 +125,25 @@ export async function getStatsByMonth(req, res) {
   }
 }
 
+export async function getStatsByFriend(req, res) {
+  try {
+    const result = await query(
+      `SELECT f.id, f.name, SUM(e.amount) as total
+       FROM friends f
+       LEFT JOIN expenses e ON e.paid_by_friend_id = f.id AND e.user_id = $1
+       WHERE f.user_id = $1
+       GROUP BY f.id
+       ORDER BY total DESC`,
+      [req.user.id]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error fetching friend stats:", err);
+    res.status(500).json({ error: "Error fetching friend stats" });
+  }
+}
+
 export async function createExpense(req, res) {
   try {
     const {

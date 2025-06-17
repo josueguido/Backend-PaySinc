@@ -83,6 +83,8 @@ router.get('/stats/categories',authenticateToken, getStatsByCategory);
 
 router.get('/stats/monthly',authenticateToken, getStatsByMonth);
 
+router.get('/stats/friend',authenticateToken, getStatsByMonth);
+
 /**
  * @swagger
  * /api/expenses:
