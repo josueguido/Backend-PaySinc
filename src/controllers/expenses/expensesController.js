@@ -211,7 +211,6 @@ export async function updateExpense(req, res) {
 export async function deleteExpense(req, res) {
   try {
     const expenseId = req.params.id;
-
     const check = await query(
       "SELECT * FROM expenses WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL",
       [expenseId, req.user.id]
