@@ -125,6 +125,7 @@ export async function getStatsByMonth(req, res) {
   }
 }
 
+
 export async function getStatsByFriend(req, res) {
   try {
     const result = await query(
