@@ -1,7 +1,7 @@
 import { Router } from "express";
 const router = Router();
 import authenticateToken from "../middleware/authMiddleware.js";
-import { getAllExpenses, getExpenseById, getStatsByCategory, getStatsByMonth, createExpense, updateExpense, deleteExpense } from "../controllers/expenses/expensesController.js";
+import { getAllExpenses, getExpenseById, getStatsByCategory, getStatsByMonth, getStatsByFriend, createExpense, updateExpense, deleteExpense } from "../controllers/expenses/expensesController.js";
 
 /**
  * @swagger
@@ -83,7 +83,7 @@ router.get('/stats/categories',authenticateToken, getStatsByCategory);
 
 router.get('/stats/monthly',authenticateToken, getStatsByMonth);
 
-router.get('/stats/friend',authenticateToken, getStatsByMonth);
+router.get('/stats/friend',authenticateToken, getStatsByFriend);
 
 /**
  * @swagger

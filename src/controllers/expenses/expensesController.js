@@ -125,14 +125,16 @@ export async function getStatsByMonth(req, res) {
   }
 }
 
+
 export async function getStatsByFriend(req, res) {
   try {
     const result = await query(
-      `SELECT f.id, f.name, SUM(e.amount) as total
+      `SELECT f.id, f.name, COALESCE(SUM(e.amount), 0) AS total
        FROM friends f
-       LEFT JOIN expenses e ON e.paid_by_friend_id = f.id AND e.user_id = $1
+       LEFT JOIN expenses e 
+         ON e.paid_by_friend_id = f.id AND e.user_id = $1
        WHERE f.user_id = $1
-       GROUP BY f.id
+       GROUP BY f.id, f.name
        ORDER BY total DESC`,
       [req.user.id]
     );
