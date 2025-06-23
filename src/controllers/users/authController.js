@@ -29,7 +29,7 @@ const login = async (req, res, next) => {
   }
 
   try {
-    const { rows } = await query("SELECT * FROM users WHERE email = $1", [
+    const { rows } = await query("SELECT * FROM paysinc_users WHERE email = $1", [
       email,
     ]);
     const user = rows[0];
@@ -43,7 +43,7 @@ const login = async (req, res, next) => {
     const refreshToken = generateRefreshToken(user);
 
     await query(
-      "INSERT INTO refresh_tokens (user_id, token) VALUES ($1, $2)",
+      "INSERT INTO paysinc_refresh_tokens (user_id, token) VALUES ($1, $2)",
       [user.id, refreshToken]
     );
 
@@ -57,7 +57,7 @@ const register = async (req, res, next) => {
   const { email, password, username } = req.body;
 
   try {
-    const { rows } = await query("SELECT 1 FROM users WHERE email = $1", [
+    const { rows } = await query("SELECT 1 FROM paysinc_users WHERE email = $1", [
       email,
     ]);
     if (rows.length > 0) {
@@ -68,12 +68,12 @@ const register = async (req, res, next) => {
     const hashedPassword = await hash(password, salt);
 
     await query(
-      "INSERT INTO users (email, password, username) VALUES ($1, $2, $3)",
+      "INSERT INTO paysinc_users (email, password, username) VALUES ($1, $2, $3)",
       [email, hashedPassword, username]
     );
 
     const { rows: userRows } = await query(
-      "SELECT id, email, username FROM users WHERE email = $1",
+      "SELECT id, email, username FROM paysinc_users WHERE email = $1",
       [email]
     );
     const user = userRows[0];
@@ -82,17 +82,15 @@ const register = async (req, res, next) => {
     const refreshTokenValue = generateRefreshToken(user);
 
     await query(
-      "INSERT INTO refresh_tokens (user_id, token) VALUES ($1, $2)",
+      "INSERT INTO paysinc_refresh_tokens (user_id, token) VALUES ($1, $2)",
       [user.id, refreshTokenValue]
     );
 
-    res
-      .status(201)
-      .json({
-        accessToken,
-        refreshToken: refreshTokenValue,
-        username: user.username,
-      });
+    res.status(201).json({
+      accessToken,
+      refreshToken: refreshTokenValue,
+      username: user.username,
+    });
   } catch (error) {
     next(error);
   }
@@ -107,7 +105,7 @@ const refreshToken = async (req, res, next) => {
 
   try {
     const { rows } = await query(
-      "SELECT * FROM refresh_tokens WHERE token = $1",
+      "SELECT * FROM paysinc_refresh_tokens WHERE token = $1",
       [token]
     );
     if (rows.length === 0) {
@@ -136,13 +134,12 @@ const logout = async (req, res, next) => {
   }
 
   try {
-    await query("DELETE FROM refresh_tokens WHERE token = $1", [token]);
+    await query("DELETE FROM paysinc_refresh_tokens WHERE token = $1", [token]);
     res.json({ message: "Logout successful" });
   } catch (error) {
     next(error);
   }
 };
-
 
 export default {
   login,

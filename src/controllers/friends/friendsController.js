@@ -13,8 +13,8 @@ export async function getAllFriends(req, res) {
         f.is_online,
         COALESCE(SUM(e.amount), 0) AS balance,
         COUNT(e.id) AS expenses_count
-      FROM friends f
-      LEFT JOIN expenses e 
+      FROM paysinc_friends f
+      LEFT JOIN paysinc_expenses e 
         ON e.paid_by_friend_id = f.id 
         AND e.user_id = $1
       WHERE f.user_id = $1
@@ -36,7 +36,7 @@ export async function getFriendById(req, res) {
 
   try {
     const result = await query(
-      `SELECT * FROM friends WHERE id = $1 AND user_id = $2`,
+      `SELECT * FROM paysinc_friends WHERE id = $1 AND user_id = $2`,
       [id, req.user.id]
     );
 
@@ -56,7 +56,7 @@ export async function createFriend(req, res) {
 
   try {
     const result = await query(
-      `INSERT INTO friends (name, email, gender, user_id) VALUES ($1, $2, $3, $4) RETURNING *`,
+      `INSERT INTO paysinc_friends (name, email, gender, user_id) VALUES ($1, $2, $3, $4) RETURNING *`,
       [name, email, gender, req.user.id]
     );
     res.status(201).json(result.rows[0]);
@@ -72,7 +72,7 @@ export async function updateFriend(req, res) {
 
   try {
     const result = await query(
-      `UPDATE friends
+      `UPDATE paysinc_friends
        SET name = $1,
            email = $2,
            gender = $3
@@ -99,7 +99,7 @@ export async function deleteFriend(req, res) {
 
   try {
     const result = await query(
-      `DELETE FROM friends WHERE id = $1 AND user_id = $2 RETURNING *`,
+      `DELETE FROM paysinc_friends WHERE id = $1 AND user_id = $2 RETURNING *`,
       [id, req.user.id]
     );
 
