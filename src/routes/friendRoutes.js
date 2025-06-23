@@ -39,7 +39,7 @@ router.use(authenticateToken);
  *       500:
  *         description: Error retrieving friends
  */
-router.get("/", getAllFriends);
+router.get("/", authenticateToken, getAllFriends);
 
 /**
  * @swagger
@@ -74,7 +74,7 @@ router.get("/", getAllFriends);
  *       500:
  *         description: Error retrieving friend
  */
-router.get("/:id", getFriendById);
+router.get("/:id", authenticateToken, getFriendById);
 
 /**
  * @swagger
@@ -113,7 +113,7 @@ router.get("/:id", getFriendById);
  *       500:
  *         description: Error creating friend
  */
-router.post("/", createFriend);
+router.post("/", authenticateToken, createFriend);
 
 /**
  * @swagger
@@ -177,7 +177,7 @@ router.post("/", createFriend);
  *                   type: string
  *                   example: Error updating friend
  */
-router.put("/:id", updateFriend);
+router.put("/:id", authenticateToken, updateFriend);
 
 /**
  * @swagger
@@ -217,6 +217,6 @@ router.put("/:id", updateFriend);
  *       500:
  *         description: Error deleting friend
  */
-router.delete("/:id", deleteFriend);
+router.delete("/:id", authenticateToken, deleteFriend);
 
 export default router;

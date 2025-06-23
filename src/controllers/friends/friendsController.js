@@ -3,9 +3,27 @@ import { query } from "../../db/index.js";
 export async function getAllFriends(req, res) {
   try {
     const result = await query(
-      `SELECT * FROM friends WHERE user_id = $1 ORDER BY name ASC`,
+      `
+      SELECT 
+        f.id,
+        f.name,
+        f.email,
+        f.gender,
+        f.created_at,
+        f.is_online,
+        COALESCE(SUM(e.amount), 0) AS balance,
+        COUNT(e.id) AS expenses_count
+      FROM friends f
+      LEFT JOIN expenses e 
+        ON e.paid_by_friend_id = f.id 
+        AND e.user_id = $1
+      WHERE f.user_id = $1
+      GROUP BY f.id
+      ORDER BY f.name ASC
+      `,
       [req.user.id]
     );
+
     res.status(200).json(result.rows);
   } catch (err) {
     console.error("Error getting friends:", err.message);
@@ -34,12 +52,12 @@ export async function getFriendById(req, res) {
 }
 
 export async function createFriend(req, res) {
-  const { name } = req.body;
+  const { name, email, gender } = req.body;
 
   try {
     const result = await query(
-      `INSERT INTO friends (name, user_id) VALUES ($1, $2) RETURNING *`,
-      [name, req.user.id]
+      `INSERT INTO friends (name, email, gender, user_id) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [name, email, gender, req.user.id]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -50,12 +68,17 @@ export async function createFriend(req, res) {
 
 export async function updateFriend(req, res) {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name, email, gender } = req.body;
 
   try {
     const result = await query(
-      `UPDATE friends SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING *`,
-      [name, id, req.user.id]
+      `UPDATE friends
+       SET name = $1,
+           email = $2,
+           gender = $3
+       WHERE id = $4 AND user_id = $5
+       RETURNING *`,
+      [name, email, gender, id, req.user.id]
     );
 
     if (result.rows.length === 0) {

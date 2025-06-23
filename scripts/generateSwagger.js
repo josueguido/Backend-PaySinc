@@ -10,4 +10,3 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 fs.writeFileSync(outputPath, JSON.stringify(swaggerSpec, null, 2));
 
-console.log("✅ Swagger JSON generado en swagger-output.json");
