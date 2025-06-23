@@ -41,7 +41,7 @@ router.use(authenticateToken);
  *       500:
  *         description: Error retrieving groups
  */
-router.get("/", getAllGroups);
+router.get("/", authenticateToken, getAllGroups);
 
 /**
  * @swagger
@@ -78,7 +78,7 @@ router.get("/", getAllGroups);
  *       500:
  *         description: Error retrieving group
  */
-router.get("/:id", getGroupById);
+router.get("/:id", authenticateToken, getGroupById);
 
 /**
  * @swagger
@@ -110,7 +110,7 @@ router.get("/:id", getGroupById);
  *       500:
  *         description: Error creating group
  */
-router.post("/", createGroup);
+router.post("/", authenticateToken, createGroup);
 
 /**
  * @swagger
@@ -150,7 +150,7 @@ router.post("/", createGroup);
  *       500:
  *         description: Error updating group
  */
-router.put("/:id", updateGroup);
+router.put("/:id", authenticateToken, updateGroup);
 
 /**
  * @swagger
@@ -192,6 +192,6 @@ router.put("/:id", updateGroup);
  *       500:
  *         description: Error deleting group
  */
-router.delete("/:id", deleteGroup);
+router.delete("/:id", authenticateToken, deleteGroup);
 
 export default router;
