@@ -6,11 +6,9 @@ import BadRequestError from "../../errors/BadRequestError.js";
 import UnauthorizedError from "../../errors/UnauthorizedError.js";
 
 const generateAccessToken = (user) => {
-  return sign(
-    { userId: user.id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
+  return sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
 };
 
 const generateRefreshToken = (user) => {
@@ -29,9 +27,10 @@ const login = async (req, res, next) => {
   }
 
   try {
-    const { rows } = await query("SELECT * FROM paysinc_users WHERE email = $1", [
-      email,
-    ]);
+    const { rows } = await query(
+      "SELECT * FROM paysinc_users WHERE email = $1",
+      [email]
+    );
     const user = rows[0];
 
     if (!user) throw new UnauthorizedError("Invalid credentials");
@@ -57,26 +56,28 @@ const register = async (req, res, next) => {
   const { email, password, username } = req.body;
 
   try {
-    const { rows } = await query("SELECT 1 FROM paysinc_users WHERE email = $1", [
-      email,
-    ]);
-    if (rows.length > 0) {
+    const { rows: existing } = await query(
+      "SELECT 1 FROM paysinc_users WHERE email = $1",
+      [email]
+    );
+
+    if (existing.length > 0) {
       return next(new BadRequestError("Email is already registered"));
     }
 
     const salt = await genSalt(10);
     const hashedPassword = await hash(password, salt);
 
-    await query(
-      "INSERT INTO paysinc_users (email, password, username) VALUES ($1, $2, $3)",
+    const { rows: insertedUsers } = await query(
+      "INSERT INTO paysinc_users (email, password, username) VALUES ($1, $2, $3) RETURNING id, email, username",
       [email, hashedPassword, username]
     );
 
-    const { rows: userRows } = await query(
-      "SELECT id, email, username FROM paysinc_users WHERE email = $1",
-      [email]
-    );
-    const user = userRows[0];
+    const user = insertedUsers[0];
+
+    if (!user) {
+      return next(new Error("Tenant or user not found"));
+    }
 
     const accessToken = generateAccessToken(user);
     const refreshTokenValue = generateRefreshToken(user);
