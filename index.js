@@ -5,7 +5,8 @@ import { config } from "dotenv";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./swagger-output.json" assert { type: "json" };
+import fs from "fs";
+const swaggerDocument = JSON.parse(fs.readFileSync("./swagger-output.json", "utf8"));
 
 import pool from "./src/db/index.js";
 import logger from "./src/utils/logger.js";
@@ -24,8 +25,26 @@ config({ path: `.env.${process.env.NODE_ENV || "development"}` });
 
 const app = express();
 
+const ACCEPTED_ORIGIN = [
+  "https://paysincapp.netlify.app",
+  "http://localhost:5173",
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || ACCEPTED_ORIGIN.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(json());
-app.use(cors());
 app.use(helmet());
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -53,5 +72,3 @@ app.use(notFound);
 app.use(errorHandler);
 
 export default app;
-
-
