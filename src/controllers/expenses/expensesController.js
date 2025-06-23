@@ -7,7 +7,7 @@ export async function getAllExpenses(req, res) {
     console.time("getAllExpenses");
 
     const result = await query(
-      `SELECT * FROM expenses 
+      `SELECT * FROM paysinc_expenses 
        WHERE user_id = $1 AND deleted_at IS NULL 
        ORDER BY created_at DESC 
        LIMIT $2 OFFSET $3`,
@@ -22,63 +22,10 @@ export async function getAllExpenses(req, res) {
   }
 }
 
-// exports.getAllExpenses = async (req, res) => {
-//   try {
-//     const { page = 1, limit = 10, category, startDate, endDate, group_id } = req.query;
-//     const offset = (page - 1) * limit;
-
-//     let query = `
-//       SELECT * FROM expenses
-//       WHERE user_id = $1 AND deleted_at IS NULL
-//     `;
-//     const params = [req.user.id];
-
-//     if (category) {
-//       query += ` AND category = $${params.length + 1}`;
-//       params.push(category);
-//     }
-
-//     if (startDate && endDate) {
-//       query += ` AND date BETWEEN $${params.length + 1} AND $${params.length + 2}`;
-//       params.push(startDate, endDate);
-//     }
-
-//     if (group_id) {
-//       query += ` AND group_id = $${params.length + 1}`;
-//       params.push(group_id);
-//     }
-
-//     query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-//     params.push(limit, offset);
-
-//     const result = await db.query(query, params);
-
-//     const totalResult = await db.query(
-//       `SELECT COUNT(*) FROM expenses WHERE user_id = $1 AND deleted_at IS NULL`,
-//       [req.user.id]
-//     );
-//     const totalItems = parseInt(totalResult.rows[0].count, 10);
-//     const totalPages = Math.ceil(totalItems / limit);
-
-//     res.json({
-//       data: result.rows,
-//       meta: {
-//         totalItems,
-//         totalPages,
-//         currentPage: parseInt(page, 10),
-//         itemsPerPage: parseInt(limit, 10),
-//       },
-//     });
-//   } catch (err) {
-//     console.error("Error fetching expenses:", err);
-//     res.status(500).json({ error: "Error fetching expenses" });
-//   }
-// }; GET /api/expenses?page=2&limit=5&category=Food&startDate=2023-01-01&endDate=2023-12-31&group_id=1
-
 export async function getExpenseById(req, res) {
   try {
     const result = await query(
-      "SELECT * FROM expenses WHERE id = $1 AND user_id = $2",
+      "SELECT * FROM paysinc_expenses WHERE id = $1 AND user_id = $2",
       [req.params.id, req.user.id]
     );
     result.rows.length === 0
@@ -93,7 +40,7 @@ export async function getStatsByCategory(req, res) {
   try {
     const result = await query(
       `SELECT category, SUM(amount) as total
-       FROM expenses
+       FROM paysinc_expenses
        WHERE user_id = $1 AND deleted_at IS NULL
        GROUP BY category
        ORDER BY total DESC`,
@@ -111,7 +58,7 @@ export async function getStatsByMonth(req, res) {
   try {
     const result = await query(
       `SELECT TO_CHAR(date, 'YYYY-MM') AS month, SUM(amount) as total
-       FROM expenses
+       FROM paysinc_expenses
        WHERE user_id = $1 AND deleted_at IS NULL
        GROUP BY month
        ORDER BY month ASC`,
@@ -125,13 +72,12 @@ export async function getStatsByMonth(req, res) {
   }
 }
 
-
 export async function getStatsByFriend(req, res) {
   try {
     const result = await query(
       `SELECT f.id, f.name, COALESCE(SUM(e.amount), 0) AS total
-       FROM friends f
-       LEFT JOIN expenses e 
+       FROM paysinc_friends f
+       LEFT JOIN paysinc_expenses e 
          ON e.paid_by_friend_id = f.id AND e.user_id = $1
        WHERE f.user_id = $1
        GROUP BY f.id, f.name
@@ -159,7 +105,7 @@ export async function createExpense(req, res) {
     } = req.body;
 
     const result = await query(
-      `INSERT INTO expenses (group_id, description, amount, paid_by_friend_id, category, date, note, user_id)
+      `INSERT INTO paysinc_expenses (group_id, description, amount, paid_by_friend_id, category, date, note, user_id)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [
@@ -187,7 +133,7 @@ export async function updateExpense(req, res) {
     req.body;
   try {
     const result = await query(
-      `UPDATE expenses 
+      `UPDATE paysinc_expenses 
        SET description = $1, amount = $2, paid_by_friend_id = $3, category = $4, date = $5, note = $6
        WHERE id = $7 AND user_id = $8 
        RETURNING *`,
@@ -214,7 +160,7 @@ export async function deleteExpense(req, res) {
   try {
     const expenseId = req.params.id;
     const check = await query(
-      "SELECT * FROM expenses WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL",
+      "SELECT * FROM paysinc_expenses WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL",
       [expenseId, req.user.id]
     );
     if (check.rows.length === 0) {
@@ -223,7 +169,7 @@ export async function deleteExpense(req, res) {
         .json({ error: "Expense not found or unauthorized" });
     }
 
-    await query("UPDATE expenses SET deleted_at = NOW() WHERE id = $1", [
+    await query("UPDATE paysinc_expenses SET deleted_at = NOW() WHERE id = $1", [
       expenseId,
     ]);
 

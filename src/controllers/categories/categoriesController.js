@@ -3,7 +3,7 @@ import { query } from "../../db/index.js";
 export async function getCategory(req, res) {
   try {
     const result = await query(
-      "SELECT * FROM categories WHERE id = $1 AND user_id = $2",
+      "SELECT * FROM paysinc_categories WHERE id = $1 AND user_id = $2",
       [req.params.id, req.user.id]
     );
     res.json(result.rows);
@@ -15,9 +15,10 @@ export async function getCategory(req, res) {
 
 export async function getAllCategories(req, res) {
   try {
-    const result = await query("SELECT * FROM categories WHERE user_id = $1", [
-      req.user.id,
-    ]);
+    const result = await query(
+      "SELECT * FROM paysinc_categories WHERE user_id = $1",
+      [req.user.id]
+    );
     res.json(result.rows);
   } catch (err) {
     console.error("Error fetching categories:", err);
@@ -33,7 +34,7 @@ export async function createCategory(req, res) {
     }
 
     const result = await query(
-      "INSERT INTO categories (name, description, user_id) VALUES ($1, $2, $3) RETURNING *",
+      "INSERT INTO paysinc_categories (name, description, user_id) VALUES ($1, $2, $3) RETURNING *",
       [name, description, req.user.id]
     );
     res.status(201).json(result.rows[0]);
@@ -52,7 +53,7 @@ export async function updateCategory(req, res) {
     }
 
     const result = await query(
-      "UPDATE categories SET name = $1, description = $2 WHERE id = $3 AND user_id = $4 RETURNING *",
+      "UPDATE paysinc_categories SET name = $1, description = $2 WHERE id = $3 AND user_id = $4 RETURNING *",
       [name, description || null, id, req.user.id]
     );
 
@@ -71,7 +72,7 @@ export async function deleteCategory(req, res) {
   const { id } = req.params;
   try {
     const result = await query(
-      "DELETE FROM categories WHERE id = $1 AND user_id = $2 RETURNING *",
+      "DELETE FROM paysinc_categories WHERE id = $1 AND user_id = $2 RETURNING *",
       [id, req.user.id]
     );
 
