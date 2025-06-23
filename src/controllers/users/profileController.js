@@ -5,7 +5,7 @@ import UnauthorizedError from "../../errors/UnauthorizedError.js";
 export async function getProfile(req, res) {
   try {
     const { rows } = await query(
-      "SELECT id, email, username, id_number, phone, birthdate, gender FROM users WHERE id = $1",
+      "SELECT id, email, username, id_number, phone, birthdate, gender FROM paysinc_users WHERE id = $1",
       [req.user.id]
     );
 
@@ -64,7 +64,7 @@ export async function updateProfile(req, res) {
     values.push(req.user.id);
     const userIdParam = `$${paramIndex}`;
 
-    const queryText = `UPDATE users SET ${updates.join(
+    const queryText = `UPDATE paysinc_users SET ${updates.join(
       ", "
     )} WHERE id = ${userIdParam} RETURNING id, email, username`;
     const { rows } = await query(queryText, values);

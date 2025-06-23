@@ -3,7 +3,7 @@ import { query } from "../../db/index.js";
 export async function getAllGroups(req, res) {
   try {
     const result = await query(
-      `SELECT * FROM groups WHERE user_id = $1 ORDER BY name ASC`,
+      `SELECT * FROM paysinc_groups WHERE user_id = $1 ORDER BY name ASC`,
       [req.user.id]
     );
     res.status(200).json(result.rows);
@@ -18,7 +18,7 @@ export async function getGroupById(req, res) {
 
   try {
     const result = await query(
-      `SELECT * FROM groups WHERE id = $1 AND user_id = $2`,
+      `SELECT * FROM paysinc_groups WHERE id = $1 AND user_id = $2`,
       [id, req.user.id]
     );
 
@@ -38,7 +38,7 @@ export async function createGroup(req, res) {
 
   try {
     const result = await query(
-      `INSERT INTO groups (name, description, user_id) VALUES ($1, $2, $3) RETURNING *`,
+      `INSERT INTO paysinc_groups (name, description, user_id) VALUES ($1, $2, $3) RETURNING *`,
       [name, description, req.user.id]
     );
     res.status(201).json(result.rows[0]);
@@ -54,7 +54,7 @@ export async function updateGroup(req, res) {
 
   try {
     const result = await query(
-      `UPDATE groups SET name = $1, description = $2 WHERE id = $3 AND user_id = $4 RETURNING *`,
+      `UPDATE paysinc_groups SET name = $1, description = $2 WHERE id = $3 AND user_id = $4 RETURNING *`,
       [name, description, id, req.user.id]
     );
 
@@ -74,7 +74,7 @@ export async function deleteGroup(req, res) {
 
   try {
     const result = await query(
-      `DELETE FROM groups WHERE id = $1 AND user_id = $2 RETURNING *`,
+      `DELETE FROM paysinc_groups WHERE id = $1 AND user_id = $2 RETURNING *`,
       [id, req.user.id]
     );
 
@@ -88,5 +88,3 @@ export async function deleteGroup(req, res) {
     res.status(500).json({ error: "Error deleting group" });
   }
 }
-
-
